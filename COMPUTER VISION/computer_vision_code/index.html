@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+    <head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<link href='http://fonts.googleapis.com/css?family=Lato|Josefin+Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+		<title>Check plate number</title>
+		
+        <script>
+            let imageUrls = [
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P1010001.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P1010002.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P1010003.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P1010004.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P1010005.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P1010006.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040007.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040008.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040009.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040010.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040011.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040012.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040013.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040014.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040015.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040016.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040017.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040018.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040019.jpg',
+                'https://numberplatesstorage.blob.core.windows.net/blob1/P6040020.jpg'
+            ];
+            let urlIndex = 0;
+            let interval = null;
+
+            async function postData(url = '', data = {}) {
+                  // Default options are marked with *
+                  const response = await fetch(url, {
+                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                        mode: 'cors', // no-cors, *cors, same-origin
+                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                        credentials: 'same-origin', // include, *same-origin, omit
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        redirect: 'follow', // manual, *follow, error
+                        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                        body: JSON.stringify(data) // body data type must match "Content-Type" header
+                  });
+                  return response.json(); // parses JSON response into native JavaScript objects
+            }
+
+            function nextFile() {
+                let fileUrl = imageUrls[urlIndex];
+                document.getElementById('img').setAttribute('src', fileUrl);
+                setFile(fileUrl)
+                urlIndex = urlIndex === imageUrls.length - 1 ? 0 : urlIndex + 1;
+            }
+
+            function onStart() {
+                document.getElementById('btn-start').style.display = 'none';
+                document.getElementById('btn-stop').style.display = 'block';
+
+                nextFile();
+
+                interval = setInterval(nextFile, 10000)
+            }
+
+            function onStop() {
+                document.getElementById('btn-start').style.display = 'block';
+                document.getElementById('btn-stop').style.display = 'none';
+                clearInterval(interval);
+                interval = null;
+            }
+
+            function onChangeUrl(event) {
+                imageUrl = event.srcElement.value;
+            }
+
+            function setFile(fileUrl) {
+                document.getElementById('verify-text').innerText = "Sprawdzanie...";
+                postData('https://numberplatesfunction.azurewebsites.net/api/HttpTrigger1', { remote_image_url: fileUrl })
+                    .then(data => {
+                        if (data && data.result) {
+                            document.getElementById('verify-text').innerText = data.result;
+                        } else {
+                            document.getElementById('verify-text').innerText = 'Wystapil blad';
+                        }
+                    }).catch(err => {
+                        alert(err);
+                    });
+            }
+        </script>
+    </head>
+    <body>
+	    <div id="wrapper">
+		<div id="header">
+			<div id="logo">
+				Verify plate license
+			</div>
+		</div>
+		<div id="content">	
+		
+			<div class="frame">
+				<div class="image">
+                    <img id="img" src="https://numberplatesstorage.blob.core.windows.net/blob1/empty.png" />
+				</div>
+				<div class="starttext">
+                    <button type="button" id="btn-start" onclick="onStart()">Start</button>
+                    <button type="button" id="btn-stop" style="display: none;" onclick="onStop()">Stop</button>
+					<div id="verify-text"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    </body>
+</html>
