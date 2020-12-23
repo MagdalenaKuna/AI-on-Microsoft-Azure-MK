@@ -29,8 +29,5 @@ Poczatkowo próbowałam znaleźć film, z którego mogłabym wyszukiwać samocho
 
 ### VIDEO
 
-link
+[link do youtube z lekkim wyjaśnieniem projektu](https://www.youtube.com/watch?v=4Q1zIQsxBek&feature=youtu.be)
 
-Video na YouTube (public/unlisted) z demo / pitch demo waszego bota (około 3 do 5 minut) i Waszym komentarzem:
-    Jaki problem rozwiązuje Wasze rozwiązanie (scenariusz)
-    Na czym polega rozwiązanie i jak działa
